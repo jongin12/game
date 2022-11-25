@@ -161,12 +161,12 @@ const user = new Unit(
 function makeMonsters_easy(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
-      "monster" + i,
-      Math.floor(Math.random() * 100 + 100), //hp
+      "monster_e" + i,
+      Math.floor(Math.random() * 20 + 100), //hp
       Math.floor(Math.random() * 20 + 20), //att
       0, //attspeed
       Math.floor(Math.random() * 20 + 20), //speed
-      0, //top
+      20, //top
       Math.floor(Math.random() * 50 + 100 * i), //left
       50, //width
       50, //height
@@ -175,6 +175,41 @@ function makeMonsters_easy(array, many) {
     array.push(monster);
   }
 }
+function makeMonsters_normal(array, many) {
+  for (let i = 0; i < many; i++) {
+    let monster = new Unit(
+      "monster_n" + i,
+      Math.floor(Math.random() * 120 + 100), //hp
+      Math.floor(Math.random() * 30 + 20), //att
+      0, //attspeed
+      Math.floor(Math.random() * 20 + 30), //speed
+      1, //top
+      Math.floor(Math.random() * 50 + 100 * i), //left
+      150, //width
+      150, //height
+      "./img/image.png" //img
+    );
+    array.push(monster);
+  }
+}
+function makeMonsters_frog(array, many) {
+  for (let i = 0; i < many; i++) {
+    let monster = new Unit(
+      "monster_n" + i,
+      Math.floor(Math.random() * 120 + 10000), //hp
+      Math.floor(Math.random() * 30 + 20), //att
+      0, //attspeed
+      Math.floor(Math.random() * 20 + 30), //speed
+      1, //top
+      Math.floor(Math.random() * 50 + 100 * i), //left
+      200, //width
+      200, //height
+      "./img/prog.png" //img
+    );
+    array.push(monster);
+  }
+}
+
 user.makeUnit();
 
 let monsterArray = [];
@@ -185,11 +220,22 @@ monsterArray.map((item) => {
 });
 gameStart(user, monsterArray, stageInfo).then(() => {
   monsterArray = [];
-  makeMonsters_easy(monsterArray, 5);
+  makeMonsters_easy(monsterArray, 4);
+  makeMonsters_normal(monsterArray, 1);
+  makeMonsters_frog(monsterArray, 1);
   monsterArray.map((item) => {
     item.makeUnit();
     item.moveUnit(1, "top", 700);
   });
-  gameStart(user, monsterArray, stageInfo);
+  gameStart(user, monsterArray, stageInfo).then(() => {
+    monsterArray = [];
+    makeMonsters_easy(monsterArray, 1);
+    makeMonsters_normal(monsterArray, 5);
+    monsterArray.map((item) => {
+      item.makeUnit();
+      item.moveUnit(1, "top", 700);
+    });
+    gameStart(user, monsterArray, stageInfo);
+  });
 });
 // moveUnit(monster, 1, "left", 300);

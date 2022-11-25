@@ -74,8 +74,8 @@ export function gameStart(unit, monster, stage) {
               monster.splice(index, 1);
               monsterCount--;
               if (unit.hp <= 0) {
-                deleteUnit(unit);
                 clearInterval(makeDiv); //총알쏘는거 멈춤
+                deleteUnit(unit);
                 gameOver();
                 reject();
               }
@@ -101,9 +101,9 @@ export function gameStart(unit, monster, stage) {
                   monsterCount--;
                   if (monsterCount <= 0) {
                     clearInterval(makeDiv); //총알쏘는거 멈춤
-                    resolve();
                     stage.stage++;
                     nextStage(stage.stage);
+                    resolve();
                   }
                 }
               }
@@ -118,6 +118,7 @@ export function gameStart(unit, monster, stage) {
     }, 1000 / unit.attSpeed);
   });
 }
+
 export const nextStage = (number) => {
   let text = document.createElement("div");
   text.className = "stage";
@@ -130,7 +131,7 @@ export const nextStage = (number) => {
     top: "300px",
     textAlign: "center",
   });
-  text.textContent = number + " STAGE";
+  text.textContent = " STAGE " + number;
   let stage = document.getElementsByClassName("stage");
   setTimeout(() => {
     stage[0].remove();
