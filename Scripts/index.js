@@ -142,6 +142,7 @@ document.addEventListener("keydown", (e) => {
     stageInfo.Skill();
   } else if (e.key === "e") {
     user.attSpeedUp(1);
+    stageInfo.Skill();
   }
 });
 
@@ -155,7 +156,7 @@ const user = new Unit(
   250, //left
   80, //width
   80, //height
-  "./img/aaaa.png" //img
+  "./img/총든 대표님.jpg" //img
 );
 
 function makeMonsters_easy(array, many) {
@@ -170,7 +171,7 @@ function makeMonsters_easy(array, many) {
       Math.floor(Math.random() * 50 + 100 * i), //left
       50, //width
       50, //height
-      "./img/bbb.png" //img
+      "./img/감탄하는 대표님.jpg" //img
     );
     array.push(monster);
   }
@@ -192,16 +193,16 @@ function makeMonsters_normal(array, many) {
     array.push(monster);
   }
 }
-function makeMonsters_frog(array, many) {
+function makeMonsters_prog(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
-      "monster_n" + i,
+      "monster_p" + i,
       Math.floor(Math.random() * 120 + 10000), //hp
       Math.floor(Math.random() * 30 + 20), //att
       0, //attspeed
-      Math.floor(Math.random() * 20 + 30), //speed
+      10, //speed
       1, //top
-      Math.floor(Math.random() * 50 + 100 * i), //left
+      200, //left
       200, //width
       200, //height
       "./img/prog.png" //img
@@ -222,7 +223,7 @@ gameStart(user, monsterArray, stageInfo).then(() => {
   monsterArray = [];
   makeMonsters_easy(monsterArray, 4);
   makeMonsters_normal(monsterArray, 1);
-  makeMonsters_frog(monsterArray, 1);
+  makeMonsters_prog(monsterArray, 1);
   monsterArray.map((item) => {
     item.makeUnit();
     item.moveUnit(1, "top", 700);
