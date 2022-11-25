@@ -4,64 +4,48 @@ export const styling = (target, style) => {
   }
 };
 
-class Unit {
-  constructor(name, hp, att, attSpeed, speed, top, left, width, height, img) {
-    this.name = name;
-    this.hp = hp;
-    this.att = att;
-    this.attSpeed = attSpeed;
-    this.speed = speed;
-    this.top = top;
-    this.left = left;
-    this.width = width;
-    this.height = height;
-    this.img = img;
-  }
+function UI() {
+  let score = document.createElement("div");
+  score.id = "score";
+  styling(score, {
+    width: "100px",
+    height: "50px",
+    fontSize: "32px",
+    color: "white",
+    position: "absolute",
+    top: "5px",
+    right: "10px",
+    textAlign: "right",
+  });
+  score.textContent = 0;
+  canvas.appendChild(score);
+  let skill = document.createElement("div");
+  skill.id = "skill";
+  styling(skill, {
+    width: "150px",
+    height: "50px",
+    fontSize: "32px",
+    color: "white",
+    position: "absolute",
+    top: "5px",
+    left: "10px",
+    textAlign: "left",
+  });
+  canvas.appendChild(skill);
 }
+UI();
+const score = document.getElementById("score");
+const skill = document.getElementById("skill");
 
-export function deleteUnit(unit) {
+function deleteUnit(unit) {
   let unitClass = document.getElementsByClassName(unit.name);
   let unitClass0 = unitClass[0];
   unitClass0.remove();
 }
 
-// export function moveUnit(unit, speed, direction, clear) {
-//   return new Promise((resolve, reject) => {
-//     if (speed > 0 && unit.left >= 600 - unit.width) {
-//       resolve();
-//     } else if (speed < 0 && unit.left <= 0) {
-//       resolve();
-//     } else if (speed > 0 && unit.top >= 800 - unit.height) {
-//       resolve();
-//     } else if (speed < 0 && unit.top <= 0) {
-//       resolve();
-//     } else {
-//       let unitClass = document.getElementsByClassName(unit.name);
-//       let unitClass0 = unitClass[0];
-//       let now = unit[direction];
-//       let obj = {};
-//       obj[direction] = setInterval(() => {
-//         unit[direction] += (unit.speed * speed) / 60;
-//         unitClass0.style[direction] = unit[direction] + "px";
-//         if (unit[direction] <= 0) {
-//           clearInterval(obj[direction]);
-//           resolve();
-//         }
-//         if (speed > 0 && unit[direction] >= now + clear) {
-//           clearInterval(obj[direction]);
-//           resolve();
-//         }
-//         if (speed < 0 && unit[direction] <= now - clear) {
-//           clearInterval(obj[direction]);
-//           resolve();
-//         }
-//       }, 1000 / 60);
-//     }
-//   });
-// } //unit이 초당 speed만큼 direction방향으로 이동, clear만큼 이동후 종료
-
-export function gameStart(unit, monster) {
+export function gameStart(unit, monster, stage) {
   let monsterCount = monster.length;
+  skill.textContent = stage.skill;
   return new Promise((resolve, reject) => {
     let makeDiv = setInterval(() => {
       let div = document.createElement("div");
@@ -79,6 +63,31 @@ export function gameStart(unit, monster) {
         div.style.top = top + "px";
         monster.map((item, index) => {
           if (item) {
+            if (
+              item.left + item.width > unit.left &&
+              item.left < unit.left + unit.width &&
+              item.top + item.height > unit.top &&
+              item.top < unit.top + unit.height
+            ) {
+              unit.hp -= item.att;
+              deleteUnit(item);
+              monster.splice(index, 1);
+              monsterCount--;
+              if (unit.hp <= 0) {
+                deleteUnit(unit);
+                clearInterval(makeDiv); //총알쏘는거 멈춤
+                gameOver();
+                reject();
+              }
+              if (monsterCount <= 0) {
+                clearInterval(makeDiv); //총알쏘는거 멈춤
+                resolve();
+              }
+            }
+          }
+        });
+        monster.map((item, index) => {
+          if (item) {
             if (item.left < left && item.left + item.width > left) {
               if (item.top + item.height >= top && item.top <= top) {
                 clearInterval(attack); //총알 이동멈춤
@@ -87,10 +96,14 @@ export function gameStart(unit, monster) {
                 if (item.hp <= 0) {
                   deleteUnit(item);
                   monster.splice(index, 1);
+                  stage.score += 100;
+                  score.textContent = stage.score;
                   monsterCount--;
                   if (monsterCount <= 0) {
                     clearInterval(makeDiv); //총알쏘는거 멈춤
-                    resolve(index);
+                    resolve();
+                    stage.stage++;
+                    nextStage(stage.stage);
                   }
                 }
               }
@@ -105,3 +118,37 @@ export function gameStart(unit, monster) {
     }, 1000 / unit.attSpeed);
   });
 }
+export const nextStage = (number) => {
+  let text = document.createElement("div");
+  text.className = "stage";
+  styling(text, {
+    width: "600px",
+    height: "200px",
+    fontSize: "100px",
+    color: "white",
+    position: "absolute",
+    top: "300px",
+    textAlign: "center",
+  });
+  text.textContent = number + " STAGE";
+  let stage = document.getElementsByClassName("stage");
+  setTimeout(() => {
+    stage[0].remove();
+  }, 1000);
+  canvas.appendChild(text);
+};
+
+export const gameOver = () => {
+  let gameOver = document.createElement("div");
+  styling(gameOver, {
+    width: "600px",
+    height: "200px",
+    fontSize: "100px",
+    color: "white",
+    position: "absolute",
+    top: "300px",
+    textAlign: "center",
+  });
+  gameOver.textContent = "게임 오버";
+  canvas.appendChild(gameOver);
+};

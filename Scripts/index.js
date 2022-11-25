@@ -24,21 +24,17 @@ function moving(unit, speed, direction, clear) {
   }
 }
 
-document.addEventListener("keydown", (e) => {
-  if (e.key === "a") {
-    moving(user, -1, "left", 15);
-  } else if (e.key === "d") {
-    moving(user, 1, "left", 15);
-  } else if (e.key === "s") {
-    moving(user, 1, "top", 15);
-  } else if (e.key === "w") {
-    moving(user, -1, "top", 15);
-  } else if (e.key === "q") {
-    user.att = 100;
-  } else if (e.key === "e") {
-    user.att = 30;
+class Stage {
+  constructor(stage, score, skill) {
+    this.stage = stage;
+    this.score = score;
+    this.skill = skill;
   }
-});
+  Skill() {
+    this.skill--;
+  }
+}
+const stageInfo = new Stage(1, 0, 3);
 
 class Unit {
   constructor(name, hp, att, attSpeed, speed, top, left, width, height, img) {
@@ -124,7 +120,30 @@ class Unit {
       }
     });
   }
+  powerUp(number) {
+    this.att += number;
+  }
+  attSpeedUp(number) {
+    this.attSpeed += number;
+  }
 }
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "a") {
+    moving(user, -1, "left", 15);
+  } else if (e.key === "d") {
+    moving(user, 1, "left", 15);
+  } else if (e.key === "s") {
+    moving(user, 1, "top", 15);
+  } else if (e.key === "w") {
+    moving(user, -1, "top", 15);
+  } else if (e.key === "q") {
+    user.powerUp(40);
+    stageInfo.Skill();
+  } else if (e.key === "e") {
+    user.attSpeedUp(1);
+  }
+});
 
 const user = new Unit(
   "me", //name
@@ -138,52 +157,39 @@ const user = new Unit(
   80, //height
   "./img/aaaa.png" //img
 );
-const monster1 = new Unit(
-  "monster1", //name
-  100, //hp
-  30, //att
-  0, //attspeed
-  40, //speed
-  0, //top
-  50, //left
-  50, //width
-  50, //height
-  "./img/bbb.png" //img
-);
 
-const monster2 = new Unit(
-  "monster2", //name
-  100, //hp
-  30, //att
-  0, //attspeed
-  40, //speed
-  0, //top
-  450, //left
-  50, //width
-  50, //height
-  "./img/bbb.png" //img
-);
-
-const randomMonster = new Unit(
-  "random", //name
-  Math.floor(Math.random() * 100 + 100), //hp
-  Math.floor(Math.random() * 20 + 20), //att
-  0, //attspeed
-  Math.floor(Math.random() * 100 + 40), //speed
-  0, //top
-  200, //left
-  50, //width
-  50, //height
-  "./img/bbb.png" //img
-);
-console.log(randomMonster);
-
+function makeMonsters_easy(array, many) {
+  for (let i = 0; i < many; i++) {
+    let monster = new Unit(
+      "monster" + i,
+      Math.floor(Math.random() * 100 + 100), //hp
+      Math.floor(Math.random() * 20 + 20), //att
+      0, //attspeed
+      Math.floor(Math.random() * 20 + 20), //speed
+      0, //top
+      Math.floor(Math.random() * 50 + 100 * i), //left
+      50, //width
+      50, //height
+      "./img/bbb.png" //img
+    );
+    array.push(monster);
+  }
+}
 user.makeUnit();
-monster1.makeUnit();
-monster2.makeUnit();
-randomMonster.makeUnit();
-monster1.moveUnit(1, "top", 700);
-monster2.moveUnit(1, "top", 700);
-randomMonster.moveUnit(1, "top", 700);
-gameStart(user, [monster1, monster2, randomMonster]);
+
+let monsterArray = [];
+makeMonsters_easy(monsterArray, 3);
+monsterArray.map((item) => {
+  item.makeUnit();
+  item.moveUnit(1, "top", 700);
+});
+gameStart(user, monsterArray, stageInfo).then(() => {
+  monsterArray = [];
+  makeMonsters_easy(monsterArray, 5);
+  monsterArray.map((item) => {
+    item.makeUnit();
+    item.moveUnit(1, "top", 700);
+  });
+  gameStart(user, monsterArray, stageInfo);
+});
 // moveUnit(monster, 1, "left", 300);
