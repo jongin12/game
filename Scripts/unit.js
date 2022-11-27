@@ -60,6 +60,7 @@ function bump(item, unit) {
 
 export function gameStart(unit, monster, stage) {
   let monsterCount = monster.length;
+  let monsterSkill;
   let makeBullet = setInterval(() => {
     let bullet = document.createElement("div");
     let top = unit.top - 10;
@@ -86,7 +87,7 @@ export function gameStart(unit, monster, stage) {
             if (item.hp <= 0) {
               deleteUnit(item);
               monster.splice(index, 1);
-              stage.score += 100;
+              stage.score += item.score;
               score.textContent = stage.score;
               monsterCount--;
             }
@@ -99,6 +100,20 @@ export function gameStart(unit, monster, stage) {
       }
     }, 1000 / 60);
   }, 1000 / unit.attSpeed);
+  monster.map((item) => {
+    if (item.skill) {
+      let index = 0;
+      monsterSkill = setInterval(() => {
+        console.log(item.skill);
+        if (item.skill) {
+          let coin1 = item.UnitSkill(index);
+          index++;
+          monster.push(coin1);
+          monsterCount++;
+        }
+      }, 1500);
+    }
+  });
   let time = setInterval(() => {
     monster.map((item, index) => {
       if (item) {
@@ -110,6 +125,15 @@ export function gameStart(unit, monster, stage) {
         }
       }
     });
+    let skill = false;
+    monster.map((item, index) => {
+      if (item.skill) {
+        skill = true;
+      }
+    });
+    if (!skill) {
+      clearInterval(monsterSkill);
+    }
     if (unit.hp <= 0) {
       clearInterval(makeBullet);
       clearInterval(time);
@@ -126,8 +150,7 @@ export function gameStart(unit, monster, stage) {
         stage.number++;
         if (stage.number < stage.info.length) {
           canvasText(`STAGE ${stage.number}`, 1);
-          unit.att *= 0.95;
-          unit.attSpeed *= 1.1;
+          unit.attSpeed += 0.5;
           console.log(unit);
           gameStart(unit, makeMonsters(stage.number), stage);
         } else {
@@ -136,12 +159,6 @@ export function gameStart(unit, monster, stage) {
       }
     }
   }, 1000 / 60);
-  monster.map((item) => {
-    if (item.skill) {
-      console.log(item.skill);
-      item.skill;
-    }
-  });
 }
 
 const canvasText = (text, time) => {

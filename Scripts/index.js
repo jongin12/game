@@ -24,6 +24,18 @@ function moving(unit, speed, direction, clear) {
   }
 }
 
+document.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft" || e.key === "a") {
+    moving(user, -1, "left", 20);
+  } else if (e.key === "ArrowRight" || e.key === "d") {
+    moving(user, 1, "left", 20);
+  } else if (e.key === "ArrowDown" || e.key === "s") {
+    moving(user, 1, "top", 20);
+  } else if (e.key === "ArrowUp" || e.key === "w") {
+    moving(user, -1, "top", 20);
+  }
+});
+
 class Stage {
   constructor(number, score, skill) {
     this.number = number;
@@ -31,10 +43,10 @@ class Stage {
     this.skill = skill;
     this.info = [
       [0, 0, 0],
-      [3, 0, 1],
-      [3, 1, 0],
-      [3, 1, 1],
-      [5, 2, 0],
+      [3, 0, 0],
+      [4, 0, 0],
+      [4, 1, 0],
+      [4, 2, 1],
       [5, 2, 1],
     ];
   }
@@ -56,7 +68,8 @@ export class Unit {
     width,
     height,
     img,
-    skill
+    skill,
+    score
   ) {
     this.name = name;
     this.hp = hp;
@@ -69,6 +82,7 @@ export class Unit {
     this.height = height;
     this.img = img;
     this.skill = skill;
+    this.score = score;
   }
   makeUnit() {
     const div = document.createElement("div");
@@ -152,32 +166,26 @@ export class Unit {
       }
     });
   }
-}
-
-document.addEventListener("keydown", (e) => {
-  if (e.key === "ArrowLeft" || e.key === "a") {
-    moving(user, -1, "left", 15);
-  } else if (e.key === "ArrowRight" || e.key === "d") {
-    moving(user, 1, "left", 15);
-  } else if (e.key === "ArrowDown" || e.key === "s") {
-    moving(user, 1, "top", 15);
-  } else if (e.key === "ArrowUp" || e.key === "w") {
-    moving(user, -1, "top", 15);
+  UnitSkill(index) {
+    let item = new Unit(
+      "monster_skill" + index,
+      1, //hp
+      5, //att
+      0, //attspeed
+      125, //speed
+      0, //top
+      50 + Math.random() * 500, //left
+      40, //width
+      40, //height
+      "./img/coin.jpg", //img
+      false,
+      0
+    );
+    item.makeUnit();
+    item.moveUnit(1, "top", 800);
+    return item;
   }
-});
-
-const user = new Unit(
-  "me", //name
-  100, //hp
-  10, //att
-  4, //attspeed
-  300, //speed
-  650, //top
-  250, //left
-  80, //width
-  80, //height
-  "./img/a.png" //img
-);
+}
 
 function makeMonster_easy(array, many) {
   for (let i = 0; i < many; i++) {
@@ -187,11 +195,13 @@ function makeMonster_easy(array, many) {
       15, //att
       0, //attspeed
       30, //speed
-      50, //top
-      i * 100 + 50, //left
+      10, //top
+      i * 100 + 50 + Math.random() * 50, //left
       50, //width
       50, //height
-      "./img/b.png" //img
+      "./img/b.png", //img
+      false,
+      100
     );
     array.push(monster);
   }
@@ -200,15 +210,17 @@ function makeMonster_normal(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
       "monster_n" + i,
-      150, //hp
+      120, //hp
       20, //att
       0, //attspeed
-      30, //speed
+      40, //speed
       1, //top
-      i * 100 + 150, //left
+      i * 150 + 20 + Math.random() * 80, //left
       80, //width
       80, //height
-      "./img/c.png" //img
+      "./img/c.png", //img
+      false,
+      300
     );
     array.push(monster);
   }
@@ -226,39 +238,8 @@ function makeMonster_prog(array, many) {
       200, //width
       200, //height
       "./img/prog.png", //img
-      function () {
-        let coin = new Unit(
-          "monster_cc",
-          1, //hp
-          5, //att
-          0, //attspeed
-          120, //speed
-          0, //top
-          50, //left
-          40, //width
-          40, //height
-          "./img/coin.jpg" //img
-        );
-        coin.makeUnit();
-        coin.moveUnit(1, "top", 800);
-      }
-    );
-    array.push(monster);
-  }
-}
-function makeMonster_coin(array, many) {
-  for (let i = 0; i < many; i++) {
-    let monster = new Unit(
-      "monster_c" + i,
-      1, //hp
-      5, //att
-      0, //attspeed
-      120, //speed
-      0, //top
-      50 + i * 100 + Math.random() * 60, //left
-      40, //width
-      40, //height
-      "./img/coin.jpg" //img
+      "coin",
+      1000
     );
     array.push(monster);
   }
@@ -268,13 +249,25 @@ export function makeMonsters(stage) {
   makeMonster_easy(monsterArray, stageInfo.info[stage][0]);
   makeMonster_normal(monsterArray, stageInfo.info[stage][1]);
   makeMonster_prog(monsterArray, stageInfo.info[stage][2]);
-  makeMonster_coin(monsterArray, stageInfo.info[stage][2] * 5);
   monsterArray.map((item) => {
     item.makeUnit();
     item.moveUnit(1, "top", 800);
   });
   return monsterArray;
 }
+const user = new Unit(
+  "me", //name
+  100, //hp
+  10, //att
+  4, //attspeed
+  600, //speed
+  650, //top
+  250, //left
+  80, //width
+  80, //height
+  "./img/a.png", //img
+  false
+);
 
 user.makeUnit();
 gameStart(user, makeMonsters(1), stageInfo);
