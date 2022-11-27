@@ -1,3 +1,5 @@
+import { makeMonsters, Unit } from "./index.js";
+
 export const styling = (target, style) => {
   for (let i in style) {
     target.style[i] = style[i];
@@ -43,113 +45,121 @@ function deleteUnit(unit) {
   unitClass0.remove();
 }
 
+function bump(item, unit) {
+  if (
+    item.left + item.width > unit.left &&
+    item.left < unit.left + unit.width &&
+    item.top + item.height > unit.top &&
+    item.top < unit.top + unit.height
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export function gameStart(unit, monster, stage) {
   let monsterCount = monster.length;
-  skill.textContent = stage.skill;
-  return new Promise((resolve, reject) => {
-    let makeDiv = setInterval(() => {
-      let div = document.createElement("div");
-      div.style.backgroundColor = "white";
-      div.style.width = "4px";
-      div.style.height = "10px";
-      div.style.position = "absolute";
-      let top = unit.top - 10;
-      div.style.top = top + "px";
-      let left = unit.left + unit.width / 2;
-      div.style.left = left + "px";
-      canvas.appendChild(div);
-      let attack = setInterval(() => {
-        top -= 10;
-        div.style.top = top + "px";
-        monster.map((item, index) => {
-          if (item) {
-            if (
-              item.left + item.width > unit.left &&
-              item.left < unit.left + unit.width &&
-              item.top + item.height > unit.top &&
-              item.top < unit.top + unit.height
-            ) {
-              unit.hp -= item.att;
+  let makeBullet = setInterval(() => {
+    let bullet = document.createElement("div");
+    let top = unit.top - 10;
+    let left = unit.left + unit.width / 2;
+    styling(bullet, {
+      width: "4px",
+      height: "10px",
+      backgroundColor: "white",
+      position: "absolute",
+      top: `${top}px`,
+      left: `${left}px`,
+    });
+    bullet.className = "bullet";
+    canvas.appendChild(bullet);
+    let moveBullet = setInterval(() => {
+      top -= 10;
+      bullet.style.top = top + "px";
+      monster.map((item, index) => {
+        if (item.left < left && item.left + item.width > left) {
+          if (item.top + item.height >= top && item.top <= top) {
+            clearInterval(moveBullet); //총알 이동멈춤
+            bullet.remove(); //총알 삭제
+            item.hp -= unit.att; //데미지
+            if (item.hp <= 0) {
               deleteUnit(item);
               monster.splice(index, 1);
+              stage.score += 100;
+              score.textContent = stage.score;
               monsterCount--;
-              if (unit.hp <= 0) {
-                clearInterval(makeDiv); //총알쏘는거 멈춤
-                deleteUnit(unit);
-                gameOver();
-                reject();
-              }
-              if (monsterCount <= 0) {
-                clearInterval(makeDiv); //총알쏘는거 멈춤
-                resolve();
-              }
             }
           }
-        });
-        monster.map((item, index) => {
-          if (item) {
-            if (item.left < left && item.left + item.width > left) {
-              if (item.top + item.height >= top && item.top <= top) {
-                clearInterval(attack); //총알 이동멈춤
-                div.remove(); //총알 삭제
-                item.hp -= unit.att; //데미지
-                if (item.hp <= 0) {
-                  deleteUnit(item);
-                  monster.splice(index, 1);
-                  stage.score += 100;
-                  score.textContent = stage.score;
-                  monsterCount--;
-                  if (monsterCount <= 0) {
-                    clearInterval(makeDiv); //총알쏘는거 멈춤
-                    stage.stage++;
-                    nextStage(stage.stage);
-                    resolve();
-                  }
-                }
-              }
-            }
-          }
-        });
-        if (top < -10) {
-          clearInterval(attack);
-          div.remove();
         }
-      }, 1000 / 60);
-    }, 1000 / unit.attSpeed);
+      });
+      if (top < -10) {
+        clearInterval(moveBullet);
+        bullet.remove();
+      }
+    }, 1000 / 60);
+  }, 1000 / unit.attSpeed);
+  let time = setInterval(() => {
+    monster.map((item, index) => {
+      if (item) {
+        if (bump(item, unit) || item.top > 790) {
+          unit.hp -= item.att;
+          deleteUnit(item);
+          monster.splice(index, 1);
+          monsterCount--;
+        }
+      }
+    });
+    if (unit.hp <= 0) {
+      clearInterval(makeBullet);
+      clearInterval(time);
+      deleteUnit(unit);
+      canvasText("게임오버", 10);
+    } else {
+      if (monsterCount <= 0) {
+        let bulletClass = document.getElementsByClassName("bullet");
+        for (let i = 0; i < bulletClass.length; i++) {
+          bulletClass[i].remove();
+        }
+        clearInterval(makeBullet);
+        clearInterval(time);
+        stage.number++;
+        if (stage.number < stage.info.length) {
+          canvasText(`STAGE ${stage.number}`, 1);
+          unit.att *= 0.95;
+          unit.attSpeed *= 1.1;
+          console.log(unit);
+          gameStart(unit, makeMonsters(stage.number), stage);
+        } else {
+          canvasText("끝", 10);
+        }
+      }
+    }
+  }, 1000 / 60);
+  monster.map((item) => {
+    if (item.skill) {
+      console.log(item.skill);
+      item.skill;
+    }
   });
 }
 
-export const nextStage = (number) => {
-  let text = document.createElement("div");
-  text.className = "stage";
-  styling(text, {
+const canvasText = (text, time) => {
+  let textDiv = document.createElement("div");
+  textDiv.className = "text";
+  styling(textDiv, {
     width: "600px",
     height: "200px",
-    fontSize: "100px",
+    fontSize: "80px",
     color: "white",
     position: "absolute",
     top: "300px",
     textAlign: "center",
   });
-  text.textContent = " STAGE " + number;
-  let stage = document.getElementsByClassName("stage");
+  textDiv.textContent = text;
+  let textTime = document.getElementsByClassName("text");
   setTimeout(() => {
-    stage[0].remove();
-  }, 1000);
-  canvas.appendChild(text);
-};
-
-export const gameOver = () => {
-  let gameOver = document.createElement("div");
-  styling(gameOver, {
-    width: "600px",
-    height: "200px",
-    fontSize: "100px",
-    color: "white",
-    position: "absolute",
-    top: "300px",
-    textAlign: "center",
-  });
-  gameOver.textContent = "게임 오버";
-  canvas.appendChild(gameOver);
+    textTime[0].remove();
+  }, 1000 * time);
+  canvas.appendChild(textDiv);
 };

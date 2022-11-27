@@ -25,10 +25,18 @@ function moving(unit, speed, direction, clear) {
 }
 
 class Stage {
-  constructor(stage, score, skill) {
-    this.stage = stage;
+  constructor(number, score, skill) {
+    this.number = number;
     this.score = score;
     this.skill = skill;
+    this.info = [
+      [0, 0, 0],
+      [3, 0, 1],
+      [3, 1, 0],
+      [3, 1, 1],
+      [5, 2, 0],
+      [5, 2, 1],
+    ];
   }
   Skill() {
     this.skill--;
@@ -36,8 +44,20 @@ class Stage {
 }
 const stageInfo = new Stage(1, 0, 3);
 
-class Unit {
-  constructor(name, hp, att, attSpeed, speed, top, left, width, height, img) {
+export class Unit {
+  constructor(
+    name,
+    hp,
+    att,
+    attSpeed,
+    speed,
+    top,
+    left,
+    width,
+    height,
+    img,
+    skill
+  ) {
     this.name = name;
     this.hp = hp;
     this.att = att;
@@ -48,6 +68,7 @@ class Unit {
     this.width = width;
     this.height = height;
     this.img = img;
+    this.skill = skill;
   }
   makeUnit() {
     const div = document.createElement("div");
@@ -62,21 +83,28 @@ class Unit {
     canvas.appendChild(div);
     const img = document.createElement("img");
     img.src = this.img;
-    img.style.width = this.width + "px";
-    img.style.height = this.height + "px";
+    styling(img, {
+      width: this.width + "px",
+      height: this.height + "px",
+    });
     div.appendChild(img);
     const hpBar = document.createElement("div");
-    hpBar.style.width = "80%";
-    hpBar.style.height = "10%";
-    hpBar.style.backgroundColor = "white";
-    hpBar.style.position = "absolute";
-    hpBar.style.left = "10%";
-    hpBar.style.top = "100%";
+    styling(hpBar, {
+      width: "80%",
+      height: "5px",
+      backgroundColor: "white",
+      border: "1px black solid",
+      position: "absolute",
+      left: "10%",
+      top: "100%",
+    });
     div.appendChild(hpBar);
     const nowHp = document.createElement("div");
-    nowHp.style.width = "100%";
-    nowHp.style.height = "100%";
-    nowHp.style.backgroundColor = "red";
+    styling(nowHp, {
+      width: "100%",
+      height: "100%",
+      backgroundColor: "red",
+    });
     hpBar.appendChild(nowHp);
     let maxHp = this.hp;
     let hpInterval = setInterval(() => {
@@ -88,13 +116,17 @@ class Unit {
   }
   moveUnit(speed, direction, clear) {
     return new Promise((resolve, reject) => {
-      if (speed > 0 && this.left >= 600 - this.width) {
+      if (speed > 0 && this.left >= 600 - this.width && direction === "left") {
         resolve();
-      } else if (speed < 0 && this.left <= 0) {
+      } else if (speed < 0 && this.left <= 0 && direction === "left") {
         resolve();
-      } else if (speed > 0 && this.top >= 800 - this.height) {
+      } else if (
+        speed > 0 &&
+        this.top >= 790 - this.height &&
+        direction === "top"
+      ) {
         resolve();
-      } else if (speed < 0 && this.top <= 0) {
+      } else if (speed < 0 && this.top <= 0 && direction === "top") {
         resolve();
       } else {
         let unitClass = document.getElementsByClassName(this.name);
@@ -120,123 +152,130 @@ class Unit {
       }
     });
   }
-  powerUp(number) {
-    this.att += number;
-  }
-  attSpeedUp(number) {
-    this.attSpeed += number;
-  }
 }
 
 document.addEventListener("keydown", (e) => {
-  if (e.key === "a") {
+  if (e.key === "ArrowLeft" || e.key === "a") {
     moving(user, -1, "left", 15);
-  } else if (e.key === "d") {
+  } else if (e.key === "ArrowRight" || e.key === "d") {
     moving(user, 1, "left", 15);
-  } else if (e.key === "s") {
+  } else if (e.key === "ArrowDown" || e.key === "s") {
     moving(user, 1, "top", 15);
-  } else if (e.key === "w") {
+  } else if (e.key === "ArrowUp" || e.key === "w") {
     moving(user, -1, "top", 15);
-  } else if (e.key === "q") {
-    user.powerUp(40);
-    stageInfo.Skill();
-  } else if (e.key === "e") {
-    user.attSpeedUp(1);
-    stageInfo.Skill();
   }
 });
 
 const user = new Unit(
   "me", //name
   100, //hp
-  30, //att
-  3, //attspeed
+  10, //att
+  4, //attspeed
   300, //speed
   650, //top
   250, //left
   80, //width
   80, //height
-  "./img/총든 대표님.jpg" //img
+  "./img/a.png" //img
 );
 
-function makeMonsters_easy(array, many) {
+function makeMonster_easy(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
       "monster_e" + i,
-      Math.floor(Math.random() * 20 + 100), //hp
-      Math.floor(Math.random() * 20 + 20), //att
+      75, //hp
+      15, //att
       0, //attspeed
-      Math.floor(Math.random() * 20 + 20), //speed
-      20, //top
-      Math.floor(Math.random() * 50 + 100 * i), //left
+      30, //speed
+      50, //top
+      i * 100 + 50, //left
       50, //width
       50, //height
-      "./img/감탄하는 대표님.jpg" //img
+      "./img/b.png" //img
     );
     array.push(monster);
   }
 }
-function makeMonsters_normal(array, many) {
+function makeMonster_normal(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
       "monster_n" + i,
-      Math.floor(Math.random() * 120 + 100), //hp
-      Math.floor(Math.random() * 30 + 20), //att
+      150, //hp
+      20, //att
       0, //attspeed
-      Math.floor(Math.random() * 20 + 30), //speed
+      30, //speed
       1, //top
-      Math.floor(Math.random() * 50 + 100 * i), //left
-      150, //width
-      150, //height
-      "./img/image.png" //img
+      i * 100 + 150, //left
+      80, //width
+      80, //height
+      "./img/c.png" //img
     );
     array.push(monster);
   }
 }
-function makeMonsters_prog(array, many) {
+function makeMonster_prog(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
       "monster_p" + i,
-      Math.floor(Math.random() * 120 + 10000), //hp
-      Math.floor(Math.random() * 30 + 20), //att
+      400, //hp
+      80, //att
       0, //attspeed
-      10, //speed
-      1, //top
+      5, //speed
+      0, //top
       200, //left
       200, //width
       200, //height
-      "./img/prog.png" //img
+      "./img/prog.png", //img
+      function () {
+        let coin = new Unit(
+          "monster_cc",
+          1, //hp
+          5, //att
+          0, //attspeed
+          120, //speed
+          0, //top
+          50, //left
+          40, //width
+          40, //height
+          "./img/coin.jpg" //img
+        );
+        coin.makeUnit();
+        coin.moveUnit(1, "top", 800);
+      }
     );
     array.push(monster);
   }
 }
-
-user.makeUnit();
-
-let monsterArray = [];
-makeMonsters_easy(monsterArray, 3);
-monsterArray.map((item) => {
-  item.makeUnit();
-  item.moveUnit(1, "top", 700);
-});
-gameStart(user, monsterArray, stageInfo).then(() => {
-  monsterArray = [];
-  makeMonsters_easy(monsterArray, 4);
-  makeMonsters_normal(monsterArray, 1);
-  makeMonsters_prog(monsterArray, 1);
+function makeMonster_coin(array, many) {
+  for (let i = 0; i < many; i++) {
+    let monster = new Unit(
+      "monster_c" + i,
+      1, //hp
+      5, //att
+      0, //attspeed
+      120, //speed
+      0, //top
+      50 + i * 100 + Math.random() * 60, //left
+      40, //width
+      40, //height
+      "./img/coin.jpg" //img
+    );
+    array.push(monster);
+  }
+}
+export function makeMonsters(stage) {
+  let monsterArray = [];
+  makeMonster_easy(monsterArray, stageInfo.info[stage][0]);
+  makeMonster_normal(monsterArray, stageInfo.info[stage][1]);
+  makeMonster_prog(monsterArray, stageInfo.info[stage][2]);
+  makeMonster_coin(monsterArray, stageInfo.info[stage][2] * 5);
   monsterArray.map((item) => {
     item.makeUnit();
-    item.moveUnit(1, "top", 700);
+    item.moveUnit(1, "top", 800);
   });
-  gameStart(user, monsterArray, stageInfo).then(() => {
-    monsterArray = [];
-    makeMonsters_easy(monsterArray, 1);
-    makeMonsters_normal(monsterArray, 5);
-    monsterArray.map((item) => {
-      item.makeUnit();
-      item.moveUnit(1, "top", 700);
-    });
-    gameStart(user, monsterArray, stageInfo);
-  });
-});
+  return monsterArray;
+}
+
+user.makeUnit();
+gameStart(user, makeMonsters(1), stageInfo);
 // moveUnit(monster, 1, "left", 300);
