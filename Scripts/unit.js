@@ -1,4 +1,6 @@
 import { makeMonsters, Unit } from "./index.js";
+import unitJson from "./unitInfo.js";
+console.log(unitJson);
 
 export const styling = (target, style) => {
   for (let i in style) {
