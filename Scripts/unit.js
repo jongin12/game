@@ -5,6 +5,7 @@ export const styling = (target, style) => {
   for (let i in style) {
     target.style[i] = style[i];
   }
+  return document.getElementById(target);
 };
 
 function makeUI(name, top, left, align) {
@@ -142,6 +143,7 @@ export function gameStart(unit, monster, stage) {
           gameStart(unit, makeMonsters(stage.number), stage);
         } else {
           canvasText("끝", 10);
+          // gameEnd(stage.score);
         }
       }
     }
@@ -166,4 +168,13 @@ const canvasText = (text, time) => {
     textTime[0].remove();
   }, 1000 * time);
   canvas.appendChild(textDiv);
+};
+const gameEnd = (score) => {
+  console.log(score);
+  let endScore = {
+    name: "ABC",
+    score: score,
+  };
+  let scoreJSON = JSON.stringify(endScore);
+  fs.writeFileSync("DB/score.json", scoreJSON);
 };

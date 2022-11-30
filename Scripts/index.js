@@ -11,7 +11,6 @@ const canvas = document.getElementById("canvas");
 styling(canvas, {
   width: "600px",
   height: "800px",
-  backgroundColor: "skyblue",
   overflow: "hidden",
 });
 
@@ -45,11 +44,12 @@ class Stage {
     this.skill = skill;
     this.info = [
       [0, 0, 0],
-      [3, 0, 0],
+      [1, 0, 0],
       [4, 0, 0],
       [4, 1, 0],
       [4, 2, 1],
       [5, 2, 1],
+      [5, 3, 2],
     ];
   }
   Skilluse() {
@@ -189,7 +189,23 @@ export class Unit {
   }
 }
 // 유닛 클래스
-
+function unitSet(unit) {
+  return new Unit(
+    unit.name,
+    unit.hp,
+    unit.att,
+    unit.attSpeed,
+    unit.speed,
+    unit.axios.top,
+    unit.axios.left,
+    unit.axios.width,
+    unit.axios.height,
+    unit.img,
+    unit.skill,
+    unit.score
+  );
+}
+// 유닛 제작
 function makeMonster_easy(array, many) {
   for (let i = 0; i < many; i++) {
     let monster = new Unit(
@@ -258,38 +274,8 @@ export function makeMonsters(stage) {
   });
   return monsterArray;
 }
-console.log(unitJson[0]);
-function unitSet(unit) {
-  return new Unit(
-    unit.name,
-    unit.hp,
-    unit.att,
-    unit.attSpeed,
-    unit.speed,
-    unit.axios.top,
-    unit.axios.left,
-    unit.axios.width,
-    unit.axios.height,
-    unit.img,
-    unit.skill,
-    unit.score
-  );
-}
+
 const user = unitSet(unitJson[0]);
-// const user = new Unit(
-//   "me", //name
-//   100, //hp
-//   10, //att
-//   4, //attspeed
-//   800, //speed
-//   650, //top
-//   250, //left
-//   80, //width
-//   80, //height
-//   "./img/a.png", //img
-//   false
-// );
 
 user.makeUnit();
 gameStart(user, makeMonsters(1), stageInfo);
-// moveUnit(monster, 1, "left", 300);
