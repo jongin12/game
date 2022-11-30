@@ -37,26 +37,20 @@ document.addEventListener("keydown", (e) => {
 });
 // 캐릭터 이동
 
-class Stage {
-  constructor(number, score, skill) {
-    this.number = number;
-    this.score = score;
-    this.skill = skill;
-    this.info = [
-      [0, 0, 0],
-      [1, 0, 0],
-      [4, 0, 0],
-      [4, 1, 0],
-      [4, 2, 1],
-      [5, 2, 1],
-      [5, 3, 2],
-    ];
-  }
-  Skilluse() {
-    this.skill--;
-  }
-}
-const stageInfo = new Stage(1, 0, 3);
+const stageInfo = {
+  number: 1,
+  score: 0,
+  skill: 3,
+  info: [
+    {},
+    { 1: 3 },
+    { 1: 4 },
+    { 1: 4, 2: 1 },
+    { 1: 4, 2: 2, 3: 1 },
+    { 1: 5, 2: 3, 3: 1 },
+    { 1: 5, 2: 4, 3: 1 },
+  ],
+};
 
 export class Unit {
   constructor(
@@ -265,9 +259,19 @@ function makeMonster_prog(array, many) {
 }
 export function makeMonsters(stage) {
   let monsterArray = [];
-  makeMonster_easy(monsterArray, stageInfo.info[stage][0]);
-  makeMonster_normal(monsterArray, stageInfo.info[stage][1]);
-  makeMonster_prog(monsterArray, stageInfo.info[stage][2]);
+  let monsterObj = stageInfo.info[stage];
+  for (let i in monsterObj) {
+    for (let j = 0; j < monsterObj[i]; j++) {
+      let monster = unitSet(unitJson[i]);
+      monster.name += j;
+      monster.left += j * 100;
+      console.log(monster.name);
+      monsterArray.push(monster);
+    }
+  }
+  // makeMonster_easy(monsterArray, stageInfo.info[stage][0]);
+  // makeMonster_normal(monsterArray, stageInfo.info[stage][1]);
+  // makeMonster_prog(monsterArray, stageInfo.info[stage][2]);
   monsterArray.map((item) => {
     item.makeUnit();
     item.moveUnit(1, "top", 800);
