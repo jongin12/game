@@ -1,6 +1,5 @@
 import { makeMonsters, Unit } from "./index.js";
 import unitJson from "./unitInfo.js";
-console.log(unitJson);
 
 export const styling = (target, style) => {
   for (let i in style) {
@@ -27,7 +26,6 @@ function makeUI(name, top, left, align) {
 }
 
 const score = makeUI("score", 0, 490, "right");
-const skill = makeUI("skill", 0, 10, "left");
 
 function deleteUnit(unit) {
   let unitClass = document.getElementsByClassName(unit.name);

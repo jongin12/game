@@ -4,7 +4,7 @@ export default {
     hp: 100,
     att: 10,
     attSpeed: 4,
-    speed: 600,
+    speed: 800,
     axios: {
       top: 650,
       left: 250,

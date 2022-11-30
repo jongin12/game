@@ -1,4 +1,5 @@
 import { styling, gameStart } from "./unit.js";
+import unitJson from "./unitInfo.js";
 
 const root = document.getElementById("root");
 styling(root, {
@@ -26,15 +27,16 @@ function moving(unit, speed, direction, clear) {
 
 document.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft" || e.key === "a") {
-    moving(user, -1, "left", 20);
+    moving(user, -1, "left", 10);
   } else if (e.key === "ArrowRight" || e.key === "d") {
-    moving(user, 1, "left", 20);
+    moving(user, 1, "left", 10);
   } else if (e.key === "ArrowDown" || e.key === "s") {
-    moving(user, 1, "top", 20);
+    moving(user, 1, "top", 10);
   } else if (e.key === "ArrowUp" || e.key === "w") {
-    moving(user, -1, "top", 20);
+    moving(user, -1, "top", 10);
   }
 });
+// 캐릭터 이동
 
 class Stage {
   constructor(number, score, skill) {
@@ -50,7 +52,7 @@ class Stage {
       [5, 2, 1],
     ];
   }
-  Skill() {
+  Skilluse() {
     this.skill--;
   }
 }
@@ -148,7 +150,7 @@ export class Unit {
         let now = this[direction];
         let obj = {};
         obj[direction] = setInterval(() => {
-          this[direction] += (this.speed * speed) / 60;
+          this[direction] += (this.speed * speed) / 100;
           unitClass0.style[direction] = this[direction] + "px";
           if (this[direction] <= 0) {
             clearInterval(obj[direction]);
@@ -162,7 +164,7 @@ export class Unit {
             clearInterval(obj[direction]);
             resolve();
           }
-        }, 1000 / 60);
+        }, 1000 / 100);
       }
     });
   }
@@ -186,6 +188,7 @@ export class Unit {
     return item;
   }
 }
+// 유닛 클래스
 
 function makeMonster_easy(array, many) {
   for (let i = 0; i < many; i++) {
@@ -255,19 +258,37 @@ export function makeMonsters(stage) {
   });
   return monsterArray;
 }
-const user = new Unit(
-  "me", //name
-  100, //hp
-  10, //att
-  4, //attspeed
-  600, //speed
-  650, //top
-  250, //left
-  80, //width
-  80, //height
-  "./img/a.png", //img
-  false
-);
+console.log(unitJson[0]);
+function unitSet(unit) {
+  return new Unit(
+    unit.name,
+    unit.hp,
+    unit.att,
+    unit.attSpeed,
+    unit.speed,
+    unit.axios.top,
+    unit.axios.left,
+    unit.axios.width,
+    unit.axios.height,
+    unit.img,
+    unit.skill,
+    unit.score
+  );
+}
+const user = unitSet(unitJson[0]);
+// const user = new Unit(
+//   "me", //name
+//   100, //hp
+//   10, //att
+//   4, //attspeed
+//   800, //speed
+//   650, //top
+//   250, //left
+//   80, //width
+//   80, //height
+//   "./img/a.png", //img
+//   false
+// );
 
 user.makeUnit();
 gameStart(user, makeMonsters(1), stageInfo);
