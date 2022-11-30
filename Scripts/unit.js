@@ -169,6 +169,7 @@ const canvasText = (text, time) => {
   }, 1000 * time);
   canvas.appendChild(textDiv);
 };
+
 const gameEnd = (score) => {
   console.log(score);
   let endScore = {

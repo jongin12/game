@@ -49,9 +49,10 @@ const stageInfo = {
     { 1: 4, 2: 2, 3: 1 },
     { 1: 5, 2: 3, 3: 1 },
     { 1: 5, 2: 4, 3: 1 },
+    { 1: 5, 2: 5, 3: 1 },
   ],
 };
-
+//스테이지 정보
 export class Unit {
   constructor(
     name,
@@ -162,6 +163,24 @@ export class Unit {
       }
     });
   }
+  rowmoveUnit() {
+    let unitClass = document.getElementsByClassName(this.name);
+    let unitClass0 = unitClass[0];
+    let leftMove = true;
+    let row = setInterval(() => {
+      if (leftMove) {
+        this.left += 0.5;
+      } else {
+        this.left -= 0.5;
+      }
+      unitClass0.style.left = this.left + "px";
+      if (this.left > 500 - this.width) {
+        leftMove = false;
+      } else if (this.left < 50) {
+        leftMove = true;
+      }
+    }, 1000 / 60);
+  }
   UnitSkill(index) {
     let item = new Unit(
       "monster_skill" + index,
@@ -199,64 +218,64 @@ function unitSet(unit) {
     unit.score
   );
 }
-// 유닛 제작
-function makeMonster_easy(array, many) {
-  for (let i = 0; i < many; i++) {
-    let monster = new Unit(
-      "monster_e" + i,
-      75, //hp
-      15, //att
-      0, //attspeed
-      30, //speed
-      10, //top
-      i * 100 + 50 + Math.random() * 50, //left
-      50, //width
-      50, //height
-      "./img/b.png", //img
-      false,
-      100
-    );
-    array.push(monster);
-  }
-}
-function makeMonster_normal(array, many) {
-  for (let i = 0; i < many; i++) {
-    let monster = new Unit(
-      "monster_n" + i,
-      120, //hp
-      20, //att
-      0, //attspeed
-      40, //speed
-      1, //top
-      i * 150 + 20 + Math.random() * 80, //left
-      80, //width
-      80, //height
-      "./img/c.png", //img
-      false,
-      300
-    );
-    array.push(monster);
-  }
-}
-function makeMonster_prog(array, many) {
-  for (let i = 0; i < many; i++) {
-    let monster = new Unit(
-      "monster_p" + i,
-      400, //hp
-      80, //att
-      0, //attspeed
-      5, //speed
-      0, //top
-      200, //left
-      200, //width
-      200, //height
-      "./img/prog.png", //img
-      "coin",
-      1000
-    );
-    array.push(monster);
-  }
-}
+// 유닛 설정
+// function makeMonster_easy(array, many) {
+//   for (let i = 0; i < many; i++) {
+//     let monster = new Unit(
+//       "monster_e" + i,
+//       75, //hp
+//       15, //att
+//       0, //attspeed
+//       30, //speed
+//       10, //top
+//       i * 100 + 50 + Math.random() * 50, //left
+//       50, //width
+//       50, //height
+//       "./img/b.png", //img
+//       false,
+//       100
+//     );
+//     array.push(monster);
+//   }
+// }
+// function makeMonster_normal(array, many) {
+//   for (let i = 0; i < many; i++) {
+//     let monster = new Unit(
+//       "monster_n" + i,
+//       120, //hp
+//       20, //att
+//       0, //attspeed
+//       40, //speed
+//       1, //top
+//       i * 150 + 20 + Math.random() * 80, //left
+//       80, //width
+//       80, //height
+//       "./img/c.png", //img
+//       false,
+//       300
+//     );
+//     array.push(monster);
+//   }
+// }
+// function makeMonster_prog(array, many) {
+//   for (let i = 0; i < many; i++) {
+//     let monster = new Unit(
+//       "monster_p" + i,
+//       400, //hp
+//       80, //att
+//       0, //attspeed
+//       5, //speed
+//       0, //top
+//       200, //left
+//       200, //width
+//       200, //height
+//       "./img/prog.png", //img
+//       "coin",
+//       1000
+//     );
+//     array.push(monster);
+//   }
+// }
 export function makeMonsters(stage) {
   let monsterArray = [];
   let monsterObj = stageInfo.info[stage];
@@ -269,12 +288,10 @@ export function makeMonsters(stage) {
       monsterArray.push(monster);
     }
   }
-  // makeMonster_easy(monsterArray, stageInfo.info[stage][0]);
-  // makeMonster_normal(monsterArray, stageInfo.info[stage][1]);
-  // makeMonster_prog(monsterArray, stageInfo.info[stage][2]);
   monsterArray.map((item) => {
     item.makeUnit();
     item.moveUnit(1, "top", 800);
+    item.rowmoveUnit(100);
   });
   return monsterArray;
 }
