@@ -284,7 +284,6 @@ export function makeMonsters(stage) {
       let monster = unitSet(unitJson[i]);
       monster.name += j;
       monster.left += j * 100;
-      console.log(monster.name);
       monsterArray.push(monster);
     }
   }
