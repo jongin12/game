@@ -8,38 +8,26 @@ export const styling = (target, style) => {
   }
 };
 
-function UI() {
-  let score = document.createElement("div");
-  score.id = "score";
-  styling(score, {
+function makeUI(name, top, left, align) {
+  let div = document.createElement("div");
+  div.id = name;
+  styling(div, {
     width: "100px",
     height: "50px",
     fontSize: "32px",
     color: "white",
     position: "absolute",
-    top: "5px",
-    right: "10px",
-    textAlign: "right",
+    top: top + "px",
+    left: left + "px",
+    textAlign: align,
   });
-  score.textContent = 0;
-  canvas.appendChild(score);
-  let skill = document.createElement("div");
-  skill.id = "skill";
-  styling(skill, {
-    width: "150px",
-    height: "50px",
-    fontSize: "32px",
-    color: "white",
-    position: "absolute",
-    top: "5px",
-    left: "10px",
-    textAlign: "left",
-  });
-  canvas.appendChild(skill);
+  div.textContent = 0;
+  canvas.appendChild(div);
+  return document.getElementById(name);
 }
-UI();
-const score = document.getElementById("score");
-const skill = document.getElementById("skill");
+
+const score = makeUI("score", 0, 490, "right");
+const skill = makeUI("skill", 0, 10, "left");
 
 function deleteUnit(unit) {
   let unitClass = document.getElementsByClassName(unit.name);
@@ -153,7 +141,6 @@ export function gameStart(unit, monster, stage) {
         if (stage.number < stage.info.length) {
           canvasText(`STAGE ${stage.number}`, 1);
           unit.attSpeed += 0.5;
-          console.log(unit);
           gameStart(unit, makeMonsters(stage.number), stage);
         } else {
           canvasText("끝", 10);
