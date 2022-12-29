@@ -15,7 +15,7 @@ const canvas = document.getElementById("canvas");
 styling(canvas, {
   width: "400px",
   height: "800px",
-  backgroundColor: "skyblue",
+  backgroundColor: "white",
   display: "flex",
   position: "relative",
 });
@@ -40,6 +40,36 @@ styling(line, {
   top: "700px",
 });
 canvas.appendChild(line);
+
+const score = document.createElement("p");
+styling(score, {
+  width: "100%",
+  height: "100px",
+  position: "absolute",
+  bottom: "500px",
+  fontSize: "60px",
+  fontWeight: "800",
+  color: "red",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});
+line.appendChild(score);
+
+const combo = document.createElement("p");
+styling(combo, {
+  width: "100%",
+  height: "100px",
+  position: "absolute",
+  bottom: "420px",
+  fontSize: "36px",
+  fontWeight: "600",
+  color: "red",
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+});
+line.appendChild(combo);
 
 {
   const setting = document.createElement("div");
@@ -95,6 +125,8 @@ canvas.appendChild(line);
   });
 }
 
+let comboNum = 0;
+
 let lineArr = canvas.children;
 function createNote(data, speed) {
   data.map((item, index) => {
@@ -113,17 +145,23 @@ function createNote(data, speed) {
         top += speed;
         if (keySwitch[index]) {
           if (top > 670 && top < 710) {
-            console.log("perfect");
+            score.textContent = "perfect";
+            comboNum++;
+            combo.textContent = `${comboNum}combo`;
             clearInterval(moveNote);
             note.remove();
           } else if (top > 650 && top < 730) {
-            console.log("good");
+            score.textContent = "good";
+            comboNum++;
+            combo.textContent = `${comboNum}combo`;
             clearInterval(moveNote);
             note.remove();
           }
         }
         if (top > 780) {
-          console.log("bad");
+          score.textContent = "bad";
+          comboNum = 0;
+          combo.textContent = `${comboNum}combo`;
           clearInterval(moveNote);
           note.remove();
         }
@@ -201,6 +239,7 @@ const randomStage = (number) => {
 
 function play(dataArr, delay, speed) {
   let index = 0;
+  comboNum = 0;
   const game = setInterval(() => {
     createNote(dataArr[index], speed);
     index++;
