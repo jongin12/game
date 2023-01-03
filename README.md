@@ -1,2 +1,2 @@
-# portfolio
-## https://jongin12.github.io/portfolio/
+# game
+## https://jongin12.github.io/game/
